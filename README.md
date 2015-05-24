@@ -1,1 +1,1 @@
-# node-ember-cli-deploy
+# node-ember-cli-deploy-redis

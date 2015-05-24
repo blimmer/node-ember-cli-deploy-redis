@@ -45,6 +45,11 @@ Arguments
 * redisClient (required) - an instantiated [node_redis](https://github.com/mranney/node_redis) client
    if your site handles a lot of requests, it might make sense to use the [memoize](https://github.com/medikoo/memoize) package with this to defer some load.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
+Returns
+* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)  
+   when resolved, it returns the requested `index.html` string  
+   when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
+
 
 ### options
 * revisionQueryParam (defaults to `index_key`)  

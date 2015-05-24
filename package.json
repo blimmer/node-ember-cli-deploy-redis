@@ -1,0 +1,37 @@
+{
+  "name": "node-ember-cli-deploy",
+  "version": "0.0.1",
+  "description": "A node middleware to serve EmberJS apps deployed by ember-cli-deploy",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blimmer/node-ember-cli-deploy.git"
+  },
+  "keywords": [
+    "ember-cli-deploy",
+    "express",
+    "redis"
+  ],
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*.js"
+  },
+  "author": "Ben Limmer <ben@benlimmer.com> (http://benlimmer.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blimmer/node-ember-cli-deploy/issues"
+  },
+  "homepage": "https://github.com/blimmer/node-ember-cli-deploy",
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "mocha": "^2.2.5",
+    "mocha-tap-reporter": "^0.1.3",
+    "redis-mock": "^0.4.9",
+    "rewire": "^2.3.3",
+    "sinon": "^1.14.1"
+  },
+  "dependencies": {
+    "async": "^1.0.0",
+    "bluebird": "^2.9.25",
+    "lodash": "^3.9.1"
+  }
+}

@@ -44,7 +44,7 @@ Arguments
    the request object is used to check for the presence of `revisionQueryParam`
 * redisClient (required) - an instantiated [node_redis](https://github.com/mranney/node_redis) client
    if your site handles a lot of requests, it might make sense to use the [memoize](https://github.com/medikoo/memoize) package with this to defer some load.
-* options (optional) - a hash of params to override [the defaults]()
+* options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### options
 * revisionQueryParam (defaults to `index_key`)  

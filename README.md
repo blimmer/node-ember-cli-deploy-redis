@@ -61,12 +61,19 @@ app.get('/', function(req, res) {
 Check out [location-aware-ember-server](https://github.com/blimmer/location-aware-ember-server) for a running example.
 
 ## Documentation
+### `nodeEmberCliDeployRedis(connectionInfo, appName, options)` (middleware constructor)
+* connectionInfo (required) - the configuration to connect to redis.  
+   internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
+* appName (required) - the application name, specified for ember deploy  
+   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
+* options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
+
 ### `fetchIndex(request, appName, connectionInfo, options)`
 Arguments
 * request (required) - the request object  
    the request object is used to check for the presence of `revisionQueryParam`
 * appName (required) - the application name, specified for ember deploy  
-   the keys in redis are prefaced with this name, e.g. `my-app:current`
+   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
 * connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)

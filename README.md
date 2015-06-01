@@ -62,29 +62,29 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 
 ## Documentation
 ### `nodeEmberCliDeployRedis(connectionInfo, appName, options)` (middleware constructor)
-* connectionInfo (required) - the configuration to connect to redis.
+* connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
-* appName (required) - the application name, specified for ember deploy
+* appName (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, appName, connectionInfo, options)`
 Arguments
-* request (required) - the request object
+* request (required) - the request object  
    the request object is used to check for the presence of `revisionQueryParam`
-* appName (required) - the application name, specified for ember deploy
+* appName (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
-* connectionInfo (required) - the configuration to connect to redis.
+* connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 Returns
-* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)
-   when resolved, it returns the requested `index.html` string
+* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)  
+   when resolved, it returns the requested `index.html` string  
    when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
 
 
 ### options
-* `revisionQueryParam` (defaults to `index_key`)
+* `revisionQueryParam` (defaults to `index_key`)  
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `appName` for security.
 
 ## Testing

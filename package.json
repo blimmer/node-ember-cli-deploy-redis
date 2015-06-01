@@ -13,7 +13,7 @@
     "redis"
   ],
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*.js"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*-test.js"
   },
   "author": "Ben Limmer <ben@benlimmer.com> (http://benlimmer.com/)",
   "license": "ISC",

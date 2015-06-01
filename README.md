@@ -62,30 +62,74 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 
 ## Documentation
 ### `nodeEmberCliDeployRedis(connectionInfo, appName, options)` (middleware constructor)
-* connectionInfo (required) - the configuration to connect to redis.  
+* connectionInfo (required) - the configuration to connect to redis.
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
-* appName (required) - the application name, specified for ember deploy  
+* appName (required) - the application name, specified for ember deploy
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, appName, connectionInfo, options)`
 Arguments
-* request (required) - the request object  
+* request (required) - the request object
    the request object is used to check for the presence of `revisionQueryParam`
-* appName (required) - the application name, specified for ember deploy  
+* appName (required) - the application name, specified for ember deploy
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
-* connectionInfo (required) - the configuration to connect to redis.  
+* connectionInfo (required) - the configuration to connect to redis.
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 Returns
-* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)  
-   when resolved, it returns the requested `index.html` string  
+* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)
+   when resolved, it returns the requested `index.html` string
    when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
 
 
 ### options
-* `revisionQueryParam` (defaults to `index_key`)  
+* `revisionQueryParam` (defaults to `index_key`)
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `appName` for security.
+
+## Testing
+In order to facilitate unit testing and/or integration testing this
+library exports a mockable redis api.  You will need to use a
+dependency injection framework such as
+[rewire](https://github.com/jhnns/rewire) to activate this testing api.
+
+### Usage with rewire (mocha syntax)
+
+```
+// my-module.js
+var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
+var indexWrapper = function(req, res) {
+  return fetchIndex(req, 'app', {
+    // real redis config
+  }).then(function (indexHtml)) {
+    // do something with index
+  });
+};
+module.exports = indexWrapper;
+
+// my-module-test.js
+var redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
+var fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
+var redis = redisTestApi.redisClientApi;
+var myModule = rewire('my-module');
+
+describe('my module', function() {
+  afterEach(function() {
+    fetchIndex.__set__('_initialized', false);
+  });
+
+  it('grabs my content', function() {
+    // inject mocked content
+    myModule.__set__('fetchIndex', fetchIndex);
+    fetchIndex.__set__('ThenRedis', redisTestApi.ThenRedisApi);
+    redis.set('app:abc123', "<html><body><h1>hello test world</h1></body></html>");
+    myModule(req, res).then(function(){
+      // assertions here
+    })
+  });
+});
+```
+
 
 ## Notes
 * Don't create any other redis keys you don't want exposed to the public under your `appName`.

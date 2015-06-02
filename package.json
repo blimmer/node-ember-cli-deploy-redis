@@ -1,6 +1,6 @@
 {
   "name": "node-ember-cli-deploy-redis",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An ExpressJS middleware to serve EmberJS apps deployed by ember-cli-deploy",
   "main": "index.js",
   "repository": {

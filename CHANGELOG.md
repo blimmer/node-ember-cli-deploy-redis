@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## 0.1.1 - 2015-06-02
+### Changed
+- Test objects exposed. See the [documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.1.1/README.md#testing) for info.
+
 ## 0.1.0 - 2015-06-01
 ### Changed
 - Reworked as an ExpressJS Middleware

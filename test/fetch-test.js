@@ -11,7 +11,7 @@ var basicReq = {
 
 var testApi = require('./helpers/test-api');
 
-var redisClientApi = testApi.redisClientApi;
+var redisClientApi = testApi.ThenRedisClientApi;
 
 var ThenRedisApi = testApi.ThenRedisApi;
 

@@ -110,7 +110,7 @@ module.exports = indexWrapper;
 // my-module-test.js
 var redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
 var fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
-var redis = redisTestApi.redisClientApi;
+var redis = redisTestApi.ThenRedisClientApi;
 var myModule = rewire('my-module');
 
 describe('my module', function() {

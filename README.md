@@ -87,6 +87,50 @@ Returns
 * `revisionQueryParam` (defaults to `index_key`)  
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `appName` for security.
 
+## Testing
+In order to facilitate unit testing and/or integration testing this
+library exports a mockable redis api.  You will need to use a
+dependency injection framework such as
+[rewire](https://github.com/jhnns/rewire) to activate this testing api.
+
+### Usage with rewire (mocha syntax)
+
+```
+// my-module.js
+var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
+var indexWrapper = function(req, res) {
+  return fetchIndex(req, 'app', {
+    // real redis config
+  }).then(function (indexHtml)) {
+    // do something with index
+  });
+};
+module.exports = indexWrapper;
+
+// my-module-test.js
+var redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
+var fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
+var redis = redisTestApi.ThenRedisClientApi;
+var myModule = rewire('my-module');
+
+describe('my module', function() {
+  afterEach(function() {
+    fetchIndex.__set__('_initialized', false);
+  });
+
+  it('grabs my content', function() {
+    // inject mocked content
+    myModule.__set__('fetchIndex', fetchIndex);
+    fetchIndex.__set__('ThenRedis', redisTestApi.ThenRedisApi);
+    redis.set('app:abc123', "<html><body><h1>hello test world</h1></body></html>");
+    myModule(req, res).then(function(){
+      // assertions here
+    })
+  });
+});
+```
+
+
 ## Notes
 * Don't create any other redis keys you don't want exposed to the public under your `appName`.
 

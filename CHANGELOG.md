@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
+## 0.2.0 - 2015-07-08
+### Changed
+- [BREAKING CHANGE] Middleware arguments have been swapped to conform to the fetch APIs. See the [documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.2.0/README.md#example) for info.
+
 ## 0.1.1 - 2015-06-02
 ### Changed
 - Test objects exposed. See the [documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.1.1/README.md#testing) for info.

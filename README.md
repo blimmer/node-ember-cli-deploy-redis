@@ -24,12 +24,12 @@ var express = require('express');
 var app = express();
 
 var nodeEmberCliDeployRedis = require('node-ember-cli-deploy-redis');
-app.use('/*', nodeEmberCliDeployRedis({
+app.use('/*', nodeEmberCliDeployRedis('myapp', {
   host: 'redis.example.org',
   port: 6929,
   password: 'passw0rd!',
   database: 0
-}, 'myapp'));
+}));
 ```
 
 ### Custom Fetch Method
@@ -61,11 +61,11 @@ app.get('/', function(req, res) {
 Check out [location-aware-ember-server](https://github.com/blimmer/location-aware-ember-server) for a running example.
 
 ## Documentation
-### `nodeEmberCliDeployRedis(connectionInfo, appName, options)` (middleware constructor)
-* connectionInfo (required) - the configuration to connect to redis.  
-   internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
+### `nodeEmberCliDeployRedis(appName, connectionInfo, options)` (middleware constructor)
 * appName (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
+* connectionInfo (required) - the configuration to connect to redis.  
+   internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, appName, connectionInfo, options)`

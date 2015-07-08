@@ -1,7 +1,9 @@
-var Bluebird  = require('bluebird');
+'use strict';
+
+var Bluebird = require('bluebird');
 var fetchIndex = require('./fetch');
 
-module.exports = function (connectionInfo, appName, opts) {
+module.exports = function (appName, connectionInfo, opts) {
   return function(req, res) {
     return new Bluebird(function (resolve, reject) {
       fetchIndex(req, appName, connectionInfo, opts).then(function(indexHtml) {

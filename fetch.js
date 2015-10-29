@@ -54,7 +54,7 @@ var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
   }
 
   return retrieveIndexKey().then(function(indexkey){
-    return redisClient.get(indexkey);
+    return redisClient.get(appName + ":" + indexkey);
   }).then(function(indexHtml){
       if (!indexHtml) { throw new Error(); }
       return indexHtml;
@@ -62,7 +62,7 @@ var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
     if (err.name === 'EmberCliDeployError') {
       throw err;
     } else {
-      throw new EmberCliDeployError("There's no " + indexkey + " revision. The site is down.", !customIndexKeyWasSpecified);
+      throw new EmberCliDeployError("There's no " + appName + ":" + indexkey + " revision. The site is down.", !customIndexKeyWasSpecified);
     }
   });
 };

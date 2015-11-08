@@ -28,7 +28,7 @@ var _initialize = function (connectionInfo, passedOpts) {
   initialized = true;
 };
 
-var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
+var fetchIndex = function (req, keyPrefix, connectionInfo, passedOpts) {
   if (!initialized) {
     _initialize(connectionInfo, passedOpts);
   }
@@ -36,7 +36,7 @@ var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
   var indexkey;
   if (req.query[opts.revisionQueryParam]) {
     var queryKey = req.query[opts.revisionQueryParam].replace(/[^A-Za-z0-9]/g, '');
-    indexkey = appName + ':' + queryKey;
+    indexkey = keyPrefix + ':' + queryKey;
   }
 
   var customIndexKeyWasSpecified = !!indexkey;
@@ -44,11 +44,11 @@ var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
     if (indexkey) {
       return Bluebird.resolve(indexkey);
     } else {
-      return redisClient.get(appName + ":current").then(function(result){
+      return redisClient.get(keyPrefix + ":current").then(function(result){
         if (!result) { throw new Error(); }
-        return appName + ":" + result;
+        return keyPrefix + ":" + result;
       }).catch(function(){
-        throw new EmberCliDeployError("There's no " + appName + ":current revision. The site is down.", true);
+        throw new EmberCliDeployError("There's no " + keyPrefix + ":current revision. The site is down.", true);
       });
     }
   }

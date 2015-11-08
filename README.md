@@ -9,6 +9,21 @@ However, [the example provided](https://github.com/philipheinser/ember-lightning
 and many of us are not. This package allows you to easily fetch current and specified `index.html`
 revisions from [redis](http://redis.io) with [Express](expressjs.com) and other Node servers.
 
+## Installation
+It's important to choose the right version of this library to match the version of
+ember-cli-deploy you're using.
+
+| ember-cli-deploy version | node-ember-cli-deploy-redis |
+|--------------------------|-----------------------------|
+| pre 0.5                  | ^0.2.0 or lower             |
+| 0.5 and beyond           | ^0.3.0 or newer             |
+
+Make sure to look at the
+[older documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.2.0/README.md)
+if you're on a pre 0.5 ember-cli-deploy release.
+See [the changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/CHANGELOG.md#030---2015-11-07)
+for an upgrade guide.
+
 ## Usage
 There are two main ways of using this library. For most simple Express servers, you'll
 want to simply use the middleware. However, if you need more flexibility, you'll
@@ -61,18 +76,18 @@ app.get('/', function(req, res) {
 Check out [location-aware-ember-server](https://github.com/blimmer/location-aware-ember-server) for a running example.
 
 ## Documentation
-### `nodeEmberCliDeployRedis(appName, connectionInfo, options)` (middleware constructor)
-* appName (required) - the application name, specified for ember deploy  
+### `nodeEmberCliDeployRedis(keyPrefix, connectionInfo, options)` (middleware constructor)
+* keyPrefix (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
-### `fetchIndex(request, appName, connectionInfo, options)`
+### `fetchIndex(request, keyPrefix, connectionInfo, options)`
 Arguments
 * request (required) - the request object  
    the request object is used to check for the presence of `revisionQueryParam`
-* appName (required) - the application name, specified for ember deploy  
+* keyPrefix (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
@@ -85,7 +100,7 @@ Returns
 
 ### options
 * `revisionQueryParam` (defaults to `index_key`)  
-   the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `appName` for security.
+   the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `keyPrefix` for security.
 
 ## Testing
 In order to facilitate unit testing and/or integration testing this
@@ -132,7 +147,7 @@ describe('my module', function() {
 
 
 ## Notes
-* Don't create any other redis keys you don't want exposed to the public under your `appName`.
+* Don't create any other redis keys you don't want exposed to the public under your `keyPrefix`.
 
 ## Contributing
 Comments/PRs/Issues are welcome!

@@ -3,10 +3,10 @@
 var Bluebird = require('bluebird');
 var fetchIndex = require('./fetch');
 
-module.exports = function (appName, connectionInfo, opts) {
+module.exports = function (keyPrefix, connectionInfo, opts) {
   return function(req, res) {
     return new Bluebird(function (resolve, reject) {
-      fetchIndex(req, appName, connectionInfo, opts).then(function(indexHtml) {
+      fetchIndex(req, keyPrefix, connectionInfo, opts).then(function(indexHtml) {
         res.status(200).send(indexHtml);
         resolve();
       }).catch(function(err) {

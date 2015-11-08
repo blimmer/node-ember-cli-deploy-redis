@@ -155,7 +155,7 @@ describe('fetch', function() {
       });
     });
 
-    it('fails the promise with a critical error if appName:current is not present', function(done) {
+    it('fails the promise with a critical error if keyPrefix:current is not present', function(done) {
       redis.del('myapp:index:current').then(function(){
         fetchIndex(basicReq, 'myapp:index').then(function(res) {
           done("Promise should not have resolved.");
@@ -167,7 +167,7 @@ describe('fetch', function() {
       });
     });
 
-    it('fails the promise with a critical error if revision pointed to by appName:current is not present', function(done) {
+    it('fails the promise with a critical error if revision pointed to by keyPrefix:current is not present', function(done) {
       redis.set('myapp:index:current', 'abc123').then(function(){
         return redis.del('myapp:index:abc123');
       }).then(function(){

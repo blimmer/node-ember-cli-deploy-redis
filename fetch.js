@@ -46,7 +46,7 @@ var fetchIndex = function (req, appName, connectionInfo, passedOpts) {
     } else {
       return redisClient.get(appName + ":current").then(function(result){
         if (!result) { throw new Error(); }
-        return result;
+        return appName + ":" + result;
       }).catch(function(){
         throw new EmberCliDeployError("There's no " + appName + ":current revision. The site is down.", true);
       });

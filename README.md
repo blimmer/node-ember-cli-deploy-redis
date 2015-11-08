@@ -24,7 +24,7 @@ var express = require('express');
 var app = express();
 
 var nodeEmberCliDeployRedis = require('node-ember-cli-deploy-redis');
-app.use('/*', nodeEmberCliDeployRedis('myapp', {
+app.use('/*', nodeEmberCliDeployRedis('myapp:index', {
   host: 'redis.example.org',
   port: 6929,
   password: 'passw0rd!',
@@ -45,7 +45,7 @@ var app = express();
 var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
 
 app.get('/', function(req, res) {
-    fetchIndex(req, 'myapp', {
+    fetchIndex(req, 'myapp:index', {
       host: 'redis.example.org',
       port: 6929,
       password: 'passw0rd!',
@@ -63,7 +63,7 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 ## Documentation
 ### `nodeEmberCliDeployRedis(appName, connectionInfo, options)` (middleware constructor)
 * appName (required) - the application name, specified for ember deploy  
-   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
+   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
@@ -73,7 +73,7 @@ Arguments
 * request (required) - the request object  
    the request object is used to check for the presence of `revisionQueryParam`
 * appName (required) - the application name, specified for ember deploy  
-   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:current`, you'd pass `my-app`.
+   the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
    internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
@@ -136,3 +136,8 @@ describe('my module', function() {
 
 ## Contributing
 Comments/PRs/Issues are welcome!
+
+### Running Project Tests
+```
+npm test
+```

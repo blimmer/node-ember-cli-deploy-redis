@@ -1,6 +1,6 @@
 var Bluebird = require('bluebird');
 
-var ThenRedisClientApi = {
+var ioRedisClientApi = {
   _storage: {},
   get: function(key){
     return Bluebird.resolve(this._storage[key]);
@@ -19,13 +19,11 @@ var ThenRedisClientApi = {
   }
 };
 
-var ThenRedisApi = {
-  createClient: function() {
-    return ThenRedisClientApi;
-  }
+var ioRedisApi = function() {
+  return ioRedisClientApi;
 };
 
 module.exports = {
-  ThenRedisClientApi: ThenRedisClientApi,
-  ThenRedisApi: ThenRedisApi
+  ioRedisClientApi: ioRedisClientApi,
+  ioRedisApi: ioRedisApi
 };

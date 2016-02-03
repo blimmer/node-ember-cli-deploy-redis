@@ -1,9 +1,9 @@
 var Bluebird  = require('bluebird');
-var _defaults = require('lodash/object/defaults');
+var _defaults = require('lodash/defaults');
 
 var EmberCliDeployError = require('./errors/ember-cli-deploy-error');
 
-var ThenRedis = require('then-redis');
+var ioRedis = require('ioredis');
 var redisClient;
 var defaultConnectionInfo = {
   host: "127.0.0.1",
@@ -23,7 +23,21 @@ var initialized = false;
 var _initialize = function (connectionInfo, passedOpts) {
   opts = _getOpts(passedOpts);
   var config = connectionInfo ? connectionInfo : defaultConnectionInfo;
-  redisClient = ThenRedis.createClient(config);
+
+  // ioRedis uses the `db` param rather than `database`.
+  // This block keeps the existing API compatible.
+  if (config.database) {
+    console.warn(
+      "[DEPRECATION] " +
+      "You passed a key called 'database' to node-ember-cli-deploy-redis. " +
+      "Please replace with 'db'. This fallback will be removed in the future."
+    );
+
+    config.db = config.database;
+    delete config.database;
+  }
+
+  redisClient = new ioRedis(config);
 
   initialized = true;
 };

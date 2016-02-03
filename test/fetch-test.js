@@ -11,15 +11,15 @@ var basicReq = {
 
 var testApi = require('./helpers/test-api');
 
-var redisClientApi = testApi.ThenRedisClientApi;
+var redisClientApi = testApi.ioRedisClientApi;
 
-var ThenRedisApi = testApi.ThenRedisApi;
+var ioRedisApi = testApi.ioRedisApi;
 
 describe('fetch', function() {
   var sandbox;
   before(function() {
     sandbox = sinon.sandbox.create();
-    fetchIndex.__set__('ThenRedis', ThenRedisApi);
+    fetchIndex.__set__('ioRedis', ioRedisApi);
   });
 
   afterEach(function() {
@@ -48,29 +48,80 @@ describe('fetch', function() {
     before(function() {
       _initialize = fetchIndex.__get__('_initialize');
     });
+    after(function() {
+      fetchIndex.__set__('ioRedis', ioRedisApi);
+    });
 
     describe('redis client initialize', function() {
-      it('sets up redis (defaults)', function() {
-        var redisMock = sandbox.mock(ThenRedisApi);
-        redisMock.expects('createClient').
-          withArgs(fetchIndex.__get__('defaultConnectionInfo')).
-          once();
+      var ioRedisInitStub;
+      beforeEach(function() {
+        ioRedisInitStub = sandbox.stub();
+        fetchIndex.__set__('ioRedis', ioRedisInitStub);
+      });
 
+      it('sets up redis (defaults)', function() {
         _initialize();
 
-        redisMock.verify();
+        expect(ioRedisInitStub.calledOnce).to.be.true;
+        expect(ioRedisInitStub.calledWithNew()).to.be.true;
+        expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
+
+        var callArg = ioRedisInitStub.firstCall.args[0];
+        expect(callArg).to.be.an('object');
+        expect(callArg).to.equal(fetchIndex.__get__('defaultConnectionInfo'));
       });
 
       it('sets up redis (config passed)', function() {
         var configString = 'redis://h:passw0rd@example.org:6929';
-        var redisMock = sandbox.mock(ThenRedisApi);
-        redisMock.expects('createClient').
-          withArgs(configString).
-          once();
-
         _initialize(configString);
 
-        redisMock.verify();
+        expect(ioRedisInitStub.calledOnce).to.be.true;
+        expect(ioRedisInitStub.calledWithNew()).to.be.true;
+        expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
+
+        var callArg = ioRedisInitStub.firstCall.args[0];
+
+        expect(callArg).to.be.a('string');
+        expect(callArg).to.equal(configString);
+      });
+
+      // TODO: remove this after people have a chance to fix their apps
+      // change was introduced in 0.4.x
+      describe('database vs. db param', function() {
+        var consoleStub;
+        beforeEach(function() {
+          consoleStub = sandbox.stub(console, 'warn');
+        });
+
+        it('translates database to db', function() {
+          var configObj = {
+            database: 1
+          };
+
+          _initialize(configObj);
+
+          expect(ioRedisInitStub.calledOnce).to.be.true;
+          expect(ioRedisInitStub.calledWithNew()).to.be.true;
+          expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
+
+          var callArg = ioRedisInitStub.firstCall.args[0];
+
+          expect(callArg).to.be.an('object');
+          expect(callArg).to.not.have.key('database');
+          expect(callArg.db).to.equal(1);
+        });
+
+        it('warns the developer of this deprecation', function() {
+          var configObj = {
+            database: 1
+          };
+
+          _initialize(configObj);
+
+          var warning = consoleStub.firstCall.args[0];
+          expect(warning).to.include('DEPRECATION');
+          expect(warning).to.include("replace with 'db'");
+        });
       });
     });
 

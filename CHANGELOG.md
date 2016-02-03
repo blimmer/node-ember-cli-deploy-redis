@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
+### Changed
+- [POTENTIALLY BREAKING CHANGE] This library now uses [ioredis](https://github.com/luin/ioredis) instead of
+  [then-redis](https://github.com/mjackson/then-redis).
+
+### Explanation
+ioredis is quickly gaining popularity and then-redis has lagged behind.
+Because of this, we've decided to move over to the ioredis package. The promises
+are all still Bluebird compatible and you might see some performance bumps as well!
+
+### Upgrading
+Most users will not experience any problems with this upgrade (except for package
+dependency changes). However, if you're passing a configuration object, you might
+need to change the parameters you're passing. For more information, please check
+out [this article](https://github.com/luin/ioredis/wiki/Migrating-from-node_redis),
+and [the available params](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options).
 
 ## 0.3.0 - 2015-11-07
 ### Changed

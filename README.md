@@ -43,16 +43,18 @@ app.use('/*', nodeEmberCliDeployRedis('myapp:index', {
   host: 'redis.example.org',
   port: 6929,
   password: 'passw0rd!',
-  database: 0
+  db: 0
 }));
 ```
+
+<hr>
 
 ### Custom Fetch Method
 1. `require` the package
 2. Use the `fetchIndex` method
 3. Render the index string as you wish.
 
-## Example
+#### Example
 ```javascript
 var express = require('express');
 var app = express();
@@ -64,7 +66,7 @@ app.get('/', function(req, res) {
       host: 'redis.example.org',
       port: 6929,
       password: 'passw0rd!',
-      database: 0
+      db: 0
     }).then(function (indexHtml) {
     indexHtml = serverVarInjectHelper.injectServerVariables(indexHtml, req);
     res.status(200).send(indexHtml);
@@ -80,7 +82,7 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 * keyPrefix (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
-   internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis. please see their README for more information.
+   internally, this library uses [ioredis](https://github.com/luin/ioredis), so pass a configuration supported by ioredis. please see their README for more information.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, keyPrefix, connectionInfo, options)`
@@ -90,8 +92,9 @@ Arguments
 * keyPrefix (required) - the application name, specified for ember deploy  
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.  
-   internally, this library uses [then-redis](https://github.com/mjackson/then-redis), so pass a configuration supported by then-redis.
+   internally, this library uses [ioredis](https://github.com/luin/ioredis), so pass a configuration supported by ioredis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
+
 Returns
 * a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)  
    when resolved, it returns the requested `index.html` string  
@@ -101,6 +104,33 @@ Returns
 ### options
 * `revisionQueryParam` (defaults to `index_key`)  
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `keyPrefix` for security.
+* `memoize` (defaults to `false`)
+   enable memoizing Redis `get`s. see [the memoization section](#Memoization) for more details.
+* `memoizeOpts` ([see defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/master/fetch.js#L18))
+   customize memoization parameters. see [the memoization section](#Memoization) for more details.
+
+## Memoization
+Since the majority of the requests will be serving the `current` version of your
+app, you can enable memoization to reduce the load on Redis. By default, memoization
+is disabled. To enable it, simply pass:
+
+```javascript
+memoize: true
+```
+
+in your options hash. Additionally, you can pass options to the underlying memoization
+library ([memoizee](https://github.com/medikoo/memoizee)). Check out their documentation,
+and the [defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/master/fetch.js#L18)
+for this library.
+
+### Example
+```javascript
+app.use('/*', nodeEmberCliDeployRedis(
+  'myapp:index',
+  { host: 'redis.example.org' },
+  { memoize: true },
+));
+```
 
 ## Testing
 In order to facilitate unit testing and/or integration testing this
@@ -110,7 +140,7 @@ dependency injection framework such as
 
 ### Usage with rewire (mocha syntax)
 
-```
+```javascript
 // my-module.js
 var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
 var indexWrapper = function(req, res) {
@@ -125,7 +155,7 @@ module.exports = indexWrapper;
 // my-module-test.js
 var redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
 var fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
-var redis = redisTestApi.ThenRedisClientApi;
+var redis = redisTestApi.ioRedisApi;
 var myModule = rewire('my-module');
 
 describe('my module', function() {
@@ -136,7 +166,7 @@ describe('my module', function() {
   it('grabs my content', function() {
     // inject mocked content
     myModule.__set__('fetchIndex', fetchIndex);
-    fetchIndex.__set__('ThenRedis', redisTestApi.ThenRedisApi);
+    fetchIndex.__set__('ioRedis', redis);
     redis.set('app:abc123', "<html><body><h1>hello test world</h1></body></html>");
     myModule(req, res).then(function(){
       // assertions here

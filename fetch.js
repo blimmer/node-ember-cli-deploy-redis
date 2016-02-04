@@ -1,9 +1,10 @@
 var Bluebird  = require('bluebird');
-var _defaults = require('lodash/defaults');
+var _defaultsDeep = require('lodash/defaultsDeep');
 
 var EmberCliDeployError = require('./errors/ember-cli-deploy-error');
 
 var ioRedis = require('ioredis');
+var memoize = require('memoizee');
 var redisClient;
 var defaultConnectionInfo = {
   host: "127.0.0.1",
@@ -12,11 +13,17 @@ var defaultConnectionInfo = {
 
 var opts;
 var _defaultOpts = {
-  revisionQueryParam: 'index_key'
+  revisionQueryParam: 'index_key',
+  memoize: false,
+  memoizeOpts: {
+    maxAge:   5000, // ms
+    preFetch: true,
+    max:      4,    // a sane default (current pointer, current html and two indexkeys in cache)
+  }
 };
 var _getOpts = function (opts) {
   opts = opts || {};
-  return _defaults({}, opts, _defaultOpts);
+  return _defaultsDeep({}, opts, _defaultOpts);
 };
 
 var initialized = false;
@@ -38,6 +45,14 @@ var _initialize = function (connectionInfo, passedOpts) {
   }
 
   redisClient = new ioRedis(config);
+
+  if (opts.memoize === true) {
+    var memoizeOpts = opts.memoizeOpts;
+    memoizeOpts.async = false; // this should never be overwritten by the consumer
+    memoizeOpts.length = 1;
+
+    redisClient.get = memoize(redisClient.get, memoizeOpts);
+  }
 
   initialized = true;
 };

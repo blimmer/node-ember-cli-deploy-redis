@@ -6,6 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - [POTENTIALLY BREAKING CHANGE] This library now uses [ioredis](https://github.com/luin/ioredis) instead of
   [then-redis](https://github.com/mjackson/then-redis).
+- [FEATURE] We now support memoization of results from Redis. This helps reduce
+  the amount of `get`s on your redis server. See the README for more information.
 
 ### Explanation
 ioredis is quickly gaining popularity and then-redis has lagged behind.

@@ -31,6 +31,7 @@
   "dependencies": {
     "bluebird": "^3.1.1",
     "ioredis": "^1.14.0",
-    "lodash": "^4.0.0"
+    "lodash": "^4.0.0",
+    "memoizee": "^0.3.9"
   }
 }

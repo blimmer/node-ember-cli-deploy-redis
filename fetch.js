@@ -1,9 +1,10 @@
 var Bluebird  = require('bluebird');
-var _defaults = require('lodash/object/defaults');
+var _defaultsDeep = require('lodash/defaultsDeep');
 
 var EmberCliDeployError = require('./errors/ember-cli-deploy-error');
 
-var ThenRedis = require('then-redis');
+var ioRedis = require('ioredis');
+var memoize = require('memoizee');
 var redisClient;
 var defaultConnectionInfo = {
   host: "127.0.0.1",
@@ -12,18 +13,46 @@ var defaultConnectionInfo = {
 
 var opts;
 var _defaultOpts = {
-  revisionQueryParam: 'index_key'
+  revisionQueryParam: 'index_key',
+  memoize: false,
+  memoizeOpts: {
+    maxAge:   5000, // ms
+    preFetch: true,
+    max:      4,    // a sane default (current pointer, current html and two indexkeys in cache)
+  }
 };
 var _getOpts = function (opts) {
   opts = opts || {};
-  return _defaults({}, opts, _defaultOpts);
+  return _defaultsDeep({}, opts, _defaultOpts);
 };
 
 var initialized = false;
 var _initialize = function (connectionInfo, passedOpts) {
   opts = _getOpts(passedOpts);
   var config = connectionInfo ? connectionInfo : defaultConnectionInfo;
-  redisClient = ThenRedis.createClient(config);
+
+  // ioRedis uses the `db` param rather than `database`.
+  // This block keeps the existing API compatible.
+  if (config.database) {
+    console.warn(
+      "[DEPRECATION] " +
+      "You passed a key called 'database' to node-ember-cli-deploy-redis. " +
+      "Please replace with 'db'. This fallback will be removed in the future."
+    );
+
+    config.db = config.database;
+    delete config.database;
+  }
+
+  redisClient = new ioRedis(config);
+
+  if (opts.memoize === true) {
+    var memoizeOpts = opts.memoizeOpts;
+    memoizeOpts.async = false; // this should never be overwritten by the consumer
+    memoizeOpts.length = 1;
+
+    redisClient.get = memoize(redisClient.get, memoizeOpts);
+  }
 
   initialized = true;
 };

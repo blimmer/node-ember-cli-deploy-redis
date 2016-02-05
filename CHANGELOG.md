@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 
-## 0.3.0 - 2016-02-05
+## 0.4.0 - 2016-02-05
 ### Changed
 - [POTENTIALLY BREAKING CHANGE] This library now uses [ioredis](https://github.com/luin/ioredis) instead of
   [then-redis](https://github.com/mjackson/then-redis).

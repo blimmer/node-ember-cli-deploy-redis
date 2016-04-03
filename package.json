@@ -22,16 +22,16 @@
   },
   "homepage": "https://github.com/blimmer/node-ember-cli-deploy-redis",
   "devDependencies": {
-    "chai": "^2.3.0",
-    "mocha": "^2.2.5",
-    "node-mocks-http": "^1.4.2",
-    "rewire": "^2.3.3",
-    "sinon": "^1.14.1"
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "node-mocks-http": "^1.5.2",
+    "rewire": "^2.5.1",
+    "sinon": "^1.17.3"
   },
   "dependencies": {
-    "bluebird": "^3.1.1",
-    "ioredis": "^1.14.0",
-    "lodash": "^4.0.0",
+    "bluebird": "^3.3.4",
+    "ioredis": "^1.15.1",
+    "lodash": "^4.7.0",
     "memoizee": "^0.3.9"
   }
 }

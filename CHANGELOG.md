@@ -1,92 +1,62 @@
 # Change Log
-All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][unreleased]
+## [0.4.1](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/0.4.1) (2016-04-03)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/0.4.0...0.4.1)
 
-## 0.4.0 - 2016-02-05
-### Changed
-- [POTENTIALLY BREAKING CHANGE] This library now uses [ioredis](https://github.com/luin/ioredis) instead of
-  [then-redis](https://github.com/mjackson/then-redis).
-- [FEATURE] We now support memoization of results from Redis. This helps reduce
-  the amount of `get`s on your redis server. See the README for more information.
+**Merged pull requests:**
 
-### Explanation
-ioredis is quickly gaining popularity and then-redis has lagged behind.
-Because of this, we've decided to move over to the ioredis package. The promises
-are all still Bluebird compatible and you might see some performance bumps as well!
+- Dependency upgrades. [\#13](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/13) ([blimmer](https://github.com/blimmer))
 
-### Upgrading
-Most users will not experience any problems with this upgrade (except for package
-dependency changes). However, if you're passing a configuration object, you might
-need to change the parameters you're passing. For more information, please check
-out [this article](https://github.com/luin/ioredis/wiki/Migrating-from-node_redis),
-and [the available params](https://github.com/luin/ioredis/blob/master/API.md#new-redisport-host-options).
+## [0.4.0](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/0.4.0) (2016-02-05)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.3.0...0.4.0)
 
-## 0.3.0 - 2015-11-07
-### Changed
-- [BREAKING CHANGE] Support for ember-cli-deploy 0.5.x
+**Implemented enhancements:**
 
-#### Explanation
-On the heels of the new ember-cli-deploy pipeline release, a breaking API change was
-required. This is because the new [ember-cli-deploy-revision-data](https://github.com/ember-cli-deploy/ember-cli-deploy-revision-data) no longer stores the full redis key as `current` link.
+- Throttle calls to redis.get [\#4](https://github.com/blimmer/node-ember-cli-deploy-redis/issues/4)
 
-In older versions you'd see something like this in redis:
-```
-127.0.0.1:6379> KEYS myapp*
-1) "myapp:current"
-2) "myapp:1e5b4f"
-2) "myapp:b4bebd"
+**Merged pull requests:**
 
-127.0.0.1:6379> GET myapp:current
-"myapp:1e5b4f"
-```
+- IORedis / Memoization Support [\#12](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/12) ([blimmer](https://github.com/blimmer))
 
-In 0.5 and beyond the structure has changed to this, by default:
-```
-127.0.0.1:6379> KEYS myapp*
-1) "myapp:index:current"
-2) "myapp:index:1e5b4f1970d8955f46ece25adb2bb0ce889bff97"
-2) "myapp:index:b4bebd982d795d9d4b805ea7dd013f6b4da3c5d7"
+## [v0.3.0](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/v0.3.0) (2015-11-08)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.2.0...v0.3.0)
 
-127.0.0.1:6379> GET myapp:index:current
-"1e5b4f1970d8955f46ece25adb2bb0ce889bff97"
-```
+**Merged pull requests:**
 
-Therefore, I had to change the logic for de-referencing the "current" revision. You'll need to follow the upgrade guide below.
+- ember cli deploy 0.5.0 compatibility [\#10](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/10) ([blimmer](https://github.com/blimmer))
 
-#### Upgrade Guide
-In order to upgrade please make sure you've done the following:
-* Follow the ember-cli-deploy lightning strategy [upgrade guide](http://ember-cli.github.io/ember-cli-deploy/docs/v0.5.x/upgrading-apps/#upgrade-an-app-that-uses-the-lightning-strategy)  
-You'll need to upgrade to the new version of ember-cli-deploy (0.5.x) and use the following plugins (outlined in the link above):
-  - ember-cli-deploy-redis
-  - ember-cli-deploy-s3
-  - ember-cli-deploy-revision-data
-  - ember-cli-deploy-display-revisions
-* Update your `appName` parameter to `keyPrefix`  
-Unless you customize your `keyPrefix` in your ember-cli-deploy configuration, your `keyPrefix` in redis will change from
-`myapp:<revision>` to `myapp:index:<revision>` ([ src](https://github.com/ember-cli-deploy/ember-cli-deploy-redis/blob/v0.1.0/index.js#L28-L30)). You'll need to
-make sure that you update your middleware constructor statement, or `fetchIndex` call from `myapp` to `myapp:index`.
+## [v0.2.0](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/v0.2.0) (2015-07-08)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.1.1...v0.2.0)
 
-#### Resources
-* [example server upgrade](https://github.com/blimmer/location-aware-ember-server/commit/cb5e49781d5d78ee6a56ab6ff7b7adfaf45bf117)
-* [example ember app upgrade](https://github.com/blimmer/location-aware-ember/commit/b4bebd982d795d9d4b805ea7dd013f6b4da3c5d7)
+**Closed issues:**
 
-## 0.2.0 - 2015-07-08
-### Changed
-- [BREAKING CHANGE] Middleware arguments have been swapped to conform to the fetch APIs. See the [documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.2.0/README.md#example) for info.
+- api inconsistency [\#6](https://github.com/blimmer/node-ember-cli-deploy-redis/issues/6)
 
-## 0.1.1 - 2015-06-02
-### Changed
-- Test objects exposed. See the [documentation](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/v0.1.1/README.md#testing) for info.
+**Merged pull requests:**
 
-## 0.1.0 - 2015-06-01
-### Changed
-- Reworked as an ExpressJS Middleware
-- [BREAKING CHANGE] Introduce then-redis dependency, instead of passing an instantiated client
+- v0.2.0 RC [\#8](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/8) ([blimmer](https://github.com/blimmer))
+- Fix API inconsistency between fetch and middleware [\#7](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/7) ([knownasilya](https://github.com/knownasilya))
 
-## 0.0.1 - 2015-05-24
-### Added
-- The initial release
+## [v0.1.1](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/v0.1.1) (2015-06-02)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.1.0...v0.1.1)
 
-[unreleased]: https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.0.1...HEAD
+**Merged pull requests:**
+
+- Expose the test api for mocking [\#5](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/5) ([ronco](https://github.com/ronco))
+
+## [v0.1.0](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/v0.1.0) (2015-06-01)
+[Full Changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/compare/v0.0.1...v0.1.0)
+
+**Implemented enhancements:**
+
+- Allow using as a middleware [\#2](https://github.com/blimmer/node-ember-cli-deploy-redis/issues/2)
+- Allow working with then-redis and node\_redis [\#1](https://github.com/blimmer/node-ember-cli-deploy-redis/issues/1)
+
+**Merged pull requests:**
+
+- Rework to have internal then-redis dependency. [\#3](https://github.com/blimmer/node-ember-cli-deploy-redis/pull/3) ([blimmer](https://github.com/blimmer))
+
+## [v0.0.1](https://github.com/blimmer/node-ember-cli-deploy-redis/tree/v0.0.1) (2015-05-24)
+
+
+\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

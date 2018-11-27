@@ -1,23 +1,25 @@
-var expect = require('chai').expect;
-var { describe, it, before, after, beforeEach, afterEach } = require('mocha');
-var context = describe;
+const { expect } = require('chai');
+require('chai').use(require("sinon-chai"));
 
-var sinon =  require('sinon');
-var rewire = require('rewire');
-var Bluebird = require('bluebird');
+const { describe, it, before, after, beforeEach, afterEach } = require('mocha');
+const context = describe;
 
-var fetchIndex = rewire('../fetch');
+const sinon =  require('sinon');
+const rewire = require('rewire');
+const Bluebird = require('bluebird');
 
-var basicReq = {
+const fetchIndex = rewire('../fetch');
+
+const basicReq = {
   query: {}
 };
 
-var testApi = require('./helpers/test-api');
-var redisClientApi = testApi.ioRedisClientApi;
-var ioRedisApi = testApi.ioRedisApi;
+const testApi = require('./helpers/test-api');
+const redisClientApi = testApi.ioRedisClientApi;
+const ioRedisApi = testApi.ioRedisApi;
 
 describe('fetch', function() {
-  var sandbox;
+  let sandbox;
   before(function() {
     sandbox = sinon.createSandbox();
     fetchIndex.__set__('ioRedis', ioRedisApi);
@@ -29,7 +31,7 @@ describe('fetch', function() {
   });
 
   describe('_initialize', function () {
-    var _initialize;
+    let _initialize;
     before(function() {
       _initialize = fetchIndex.__get__('_initialize');
     });
@@ -38,7 +40,7 @@ describe('fetch', function() {
     });
 
     describe('redis client initialize', function() {
-      var ioRedisInitStub;
+      let ioRedisInitStub;
       beforeEach(function() {
         ioRedisInitStub = sandbox.stub();
         fetchIndex.__set__('ioRedis', ioRedisInitStub);
@@ -47,32 +49,26 @@ describe('fetch', function() {
       it('sets up redis (defaults)', function() {
         _initialize();
 
-        expect(ioRedisInitStub.calledOnce).to.be.true;
-        expect(ioRedisInitStub.calledWithNew()).to.be.true;
-        expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
-
-        var callArg = ioRedisInitStub.firstCall.args[0];
-        expect(callArg).to.be.an('object');
-        expect(callArg).to.equal(fetchIndex.__get__('defaultConnectionInfo'));
+        expect(ioRedisInitStub).to.have.been.calledOnce;
+        expect(ioRedisInitStub).to.have.been.calledWithNew;
+        expect(ioRedisInitStub).to.have.been.calledOnceWith({
+          host: "127.0.0.1",
+          port: 6379
+        });
       });
 
       it('sets up redis (config passed)', function() {
-        var configString = 'redis://h:passw0rd@example.org:6929';
+        let configString = 'redis://h:passw0rd@example.org:6929';
         _initialize(configString);
 
-        expect(ioRedisInitStub.calledOnce).to.be.true;
-        expect(ioRedisInitStub.calledWithNew()).to.be.true;
-        expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
-
-        var callArg = ioRedisInitStub.firstCall.args[0];
-
-        expect(callArg).to.be.a('string');
-        expect(callArg).to.equal(configString);
+        expect(ioRedisInitStub).to.have.been.calledOnce;
+        expect(ioRedisInitStub).to.have.been.calledWithNew;
+        expect(ioRedisInitStub).to.have.been.calledOnceWith(configString);
       });
     });
 
     describe('memoization', function() {
-      var memoizeStub;
+      let memoizeStub;
       beforeEach(function() {
         memoizeStub = sandbox.stub();
         fetchIndex.__set__('memoize', memoizeStub);
@@ -93,9 +89,7 @@ describe('fetch', function() {
         it('passes default options to memoize', function() {
           _initialize({}, { memoize: true });
 
-          expect(memoizeStub.calledOnce).to.be.true;
-          var opts = memoizeStub.firstCall.args[1];
-          expect(opts).to.deep.equal({
+          expect(memoizeStub).to.have.been.calledOnceWith(undefined, {
             maxAge: 5000,
             preFetch: true,
             max: 4,
@@ -105,7 +99,7 @@ describe('fetch', function() {
         });
 
         it('allows overriding existing properties', function() {
-          var myOpts = {
+          let myOpts = {
             maxAge: 10000,
             preFetch: 0.6,
             max: 2,
@@ -116,9 +110,7 @@ describe('fetch', function() {
             memoizeOpts: myOpts,
           });
 
-          expect(memoizeStub.calledOnce).to.be.true;
-          var opts = memoizeStub.firstCall.args[1];
-          expect(opts).to.deep.equal({
+          expect(memoizeStub).calledOnceWith(undefined, {
             maxAge: 10000,
             preFetch: 0.6,
             max: 2,
@@ -128,10 +120,10 @@ describe('fetch', function() {
         });
 
         it('allows adding additional memoizee options', function() {
-          var myDispose = function() {
+          const myDispose = function() {
             // some custom dispose logic because I'm a masochist
           };
-          var myOpts = {
+          let myOpts = {
             dispose: myDispose
           };
 
@@ -140,15 +132,18 @@ describe('fetch', function() {
             memoizeOpts: myOpts,
           });
 
-          expect(memoizeStub.calledOnce).to.be.true;
-          var opts = memoizeStub.firstCall.args[1];
-          expect(opts).to.include({
-            dispose: myDispose
+          expect(memoizeStub).calledOnceWith(undefined, {
+            async: false,
+            dispose: myDispose,
+            length: 1,
+            max: 4,
+            maxAge: 5000,
+            preFetch: true
           });
         });
 
         it('does not allow overriding async flag', function() {
-          var myOpts = {
+          let myOpts = {
             async: true,
           };
 
@@ -157,9 +152,7 @@ describe('fetch', function() {
             memoizeOpts: myOpts,
           });
 
-          expect(memoizeStub.calledOnce).to.be.true;
-          var opts = memoizeStub.firstCall.args[1];
-          expect(opts).to.deep.equal({
+          expect(memoizeStub).to.have.been.calledOnceWith(undefined, {
             maxAge: 5000,
             preFetch: true,
             max: 4,
@@ -169,7 +162,7 @@ describe('fetch', function() {
         });
 
         it('does not allow overriding the length property', function() {
-          var myOpts = {
+          let myOpts = {
             length: 2,
           };
 
@@ -178,9 +171,7 @@ describe('fetch', function() {
             memoizeOpts: myOpts,
           });
 
-          expect(memoizeStub.calledOnce).to.be.true;
-          var opts = memoizeStub.firstCall.args[1];
-          expect(opts).to.deep.equal({
+          expect(memoizeStub).to.have.been.calledOnceWith(undefined, {
             maxAge: 5000,
             preFetch: true,
             max: 4,
@@ -195,14 +186,14 @@ describe('fetch', function() {
       it('has a default revisionQueryParam', function() {
         _initialize();
 
-        var opts = fetchIndex.__get__('opts');
+        let opts = fetchIndex.__get__('opts');
         expect(opts.revisionQueryParam).to.equal('index_key');
       });
 
       it('allows override of revisionQueryParam', function() {
         _initialize({}, {revisionQueryParam: 'foobar'});
 
-        var opts = fetchIndex.__get__('opts');
+        let opts = fetchIndex.__get__('opts');
         expect(opts.revisionQueryParam).to.equal('foobar');
       });
     });
@@ -215,7 +206,7 @@ describe('fetch', function() {
   });
 
   describe('fetchIndex', function() {
-    var redis, redisSpy;
+    let redis, redisSpy;
 
     before(function() {
       redis = redisClientApi;
@@ -230,7 +221,7 @@ describe('fetch', function() {
     });
 
     it('normalizes spaces in revisionQueryParam', function(done) {
-      var req = {
+      const req = {
         query: {
           index_key: 'abc 123'
         }
@@ -238,8 +229,8 @@ describe('fetch', function() {
 
       redis.set('myapp:index:abc123', 'foo').then(function(){
         fetchIndex(req, 'myapp:index').then(function() {
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
-          expect(redisSpy.calledWith('myapp:index:abc 123')).to.be.false;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
+          expect(redisSpy).to.not.have.been.calledWith('myapp:index:abc 123');
           done();
         }).catch(function(err) {
           done(err);
@@ -249,7 +240,7 @@ describe('fetch', function() {
     });
 
     it('removes special chars revisionQueryParam', function(done) {
-      var req = {
+      const req = {
         query: {
           index_key: 'ab@*#!c(@)123'
         }
@@ -257,8 +248,8 @@ describe('fetch', function() {
 
       redis.set('myapp:index:abc123', 'foo').then(function(){
         fetchIndex(req, 'myapp:index').then(function() {
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
-          expect(redisSpy.calledWith('myapp:index:ab@*#!c(@)123')).to.be.false;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
+          expect(redisSpy).to.not.have.been.calledWith('myapp:index:ab@*#!c(@)123');
           done();
         }).catch(function(err) {
           done(err);
@@ -271,7 +262,7 @@ describe('fetch', function() {
         fetchIndex(basicReq, 'myapp:index').then(function() {
           done("Promise should not have resolved.");
         }).catch(function(err) {
-          expect(redisSpy.calledWith('myapp:index:current')).to.be.true;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:current');
           expect(err.critical).to.be.true;
           done();
         });
@@ -285,8 +276,8 @@ describe('fetch', function() {
         fetchIndex(basicReq, 'myapp:index').then(function() {
           done("Promise should not have resolved.");
         }).catch(function(err) {
-          expect(redisSpy.calledWith('myapp:index:current')).to.be.true;
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:current');
+          expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
           expect(err.critical).to.be.true;
           done();
         });
@@ -294,7 +285,7 @@ describe('fetch', function() {
     });
 
     it('fails the promise with a non-critical error if revision requestd by query param is not present', function(done) {
-      let req = {
+      const req = {
         query: {
           index_key: 'abc123'
         }
@@ -303,7 +294,7 @@ describe('fetch', function() {
         fetchIndex(req, 'myapp:index').then(function() {
           done("Promise should not have resolved.");
         }).catch(function(err) {
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
           expect(err.critical).to.be.false;
           done();
         });
@@ -311,14 +302,14 @@ describe('fetch', function() {
     });
 
     it('resolves the promise with the index html requested', function(done) {
-      var currentHtmlString = '<html><body>1</body></html>';
+      const currentHtmlString = '<html><body>1</body></html>';
       Bluebird.all([
         redis.set('myapp:index:current', 'abc123'),
         redis.set('myapp:index:abc123', currentHtmlString),
       ]).then(function(){
         fetchIndex(basicReq, 'myapp:index').then(function(html) {
-          expect(redisSpy.calledWith('myapp:index:current')).to.be.true;
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
+          expect(redisSpy).to.have.been.calledWith('myapp:index:current');
+          expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
           expect(html).to.equal(currentHtmlString);
           done();
         }).catch(function() {
@@ -328,9 +319,9 @@ describe('fetch', function() {
     });
 
     it('resolves the promise with the index html requested (specific revision)', function(done) {
-      var currentHtmlString = '<html><body>1</body></html>';
-      var newDeployHtmlString = '<html><body>2</body></html>';
-      var req = {
+      const currentHtmlString = '<html><body>1</body></html>';
+      const newDeployHtmlString = '<html><body>2</body></html>';
+      const req = {
         query: {
           index_key: 'def456'
         }
@@ -341,9 +332,8 @@ describe('fetch', function() {
         redis.set('myapp:index:def456', newDeployHtmlString)
       ]).then(function(){
         fetchIndex(req, 'myapp:index').then(function(html) {
-          expect(redisSpy.calledWith('myapp:index:current')).to.be.false;
-          expect(redisSpy.calledWith('myapp:index:abc123')).to.be.false;
-          expect(redisSpy.calledWith('myapp:index:def456')).to.be.true;
+          expect(redisSpy).to.not.have.been.calledWith('myapp:index:current');
+          expect(redisSpy).to.have.been.calledWith('myapp:index:def456');
           expect(html).to.equal(newDeployHtmlString);
           done();
         }).catch(function() {
@@ -352,8 +342,8 @@ describe('fetch', function() {
       });
     });
 
-    it('memoizes results from redis when turned on', function() {
-      var currentHtmlString = '<html><body>1</body></html>';
+    it('memoizes results from redis when turned on', function(done) {
+      const currentHtmlString = '<html><body>1</body></html>';
       Bluebird.all([
         redis.set('myapp:index:current', 'abc123'),
         redis.set('myapp:index:abc123', currentHtmlString),
@@ -361,8 +351,9 @@ describe('fetch', function() {
         fetchIndex(basicReq, 'myapp:index', null, { memoize: true }),
         fetchIndex(basicReq, 'myapp:index', null, { memoize: true }),
       ]).then(function(){
-        expect(redisSpy.withArgs('myapp:index:current').calledOnce).to.be.true;
-        expect(redisSpy.withArgs('myapp:index:abc123').calledOnce).to.be.true;
+        expect(redisSpy).to.have.been.calledWith('myapp:index:current');
+        expect(redisSpy).to.have.been.calledWith('myapp:index:abc123');
+        done();
       });
     });
   });

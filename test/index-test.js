@@ -1,4 +1,6 @@
 var expect    = require('chai').expect;
+var { describe, before, beforeEach, afterEach, it } = require('mocha');
+
 var sinon     = require('sinon');
 var httpMocks = require('node-mocks-http');
 var Bluebird  = require('bluebird');

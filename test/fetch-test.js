@@ -1,4 +1,7 @@
 var expect = require('chai').expect;
+var { describe, it, before, after, beforeEach, afterEach } = require('mocha');
+var context = describe;
+
 var sinon =  require('sinon');
 var rewire = require('rewire');
 var Bluebird = require('bluebird');
@@ -128,7 +131,7 @@ describe('fetch', function() {
           var myDispose = function() {
             // some custom dispose logic because I'm a masochist
           };
-          myOpts = {
+          var myOpts = {
             dispose: myDispose
           };
 
@@ -265,7 +268,7 @@ describe('fetch', function() {
 
     it('fails the promise with a critical error if keyPrefix:current is not present', function(done) {
       redis.del('myapp:index:current').then(function(){
-        fetchIndex(basicReq, 'myapp:index').then(function(res) {
+        fetchIndex(basicReq, 'myapp:index').then(function() {
           done("Promise should not have resolved.");
         }).catch(function(err) {
           expect(redisSpy.calledWith('myapp:index:current')).to.be.true;
@@ -291,7 +294,7 @@ describe('fetch', function() {
     });
 
     it('fails the promise with a non-critical error if revision requestd by query param is not present', function(done) {
-      req = {
+      let req = {
         query: {
           index_key: 'abc123'
         }
@@ -318,7 +321,7 @@ describe('fetch', function() {
           expect(redisSpy.calledWith('myapp:index:abc123')).to.be.true;
           expect(html).to.equal(currentHtmlString);
           done();
-        }).catch(function(err) {
+        }).catch(function() {
           done("Promise should not have failed.");
         });
       });
@@ -343,7 +346,7 @@ describe('fetch', function() {
           expect(redisSpy.calledWith('myapp:index:def456')).to.be.true;
           expect(html).to.equal(newDeployHtmlString);
           done();
-        }).catch(function(err) {
+        }).catch(function() {
           done("Promise should not have failed.");
         });
       });

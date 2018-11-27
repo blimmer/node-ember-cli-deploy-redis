@@ -16,14 +16,6 @@ jobs:
     - stage: lint
       node: 10
       script: eslint .
-    - stage: test-node-6
-      node: 6
-      script: npm test && ./smoke-test/run.sh
-    - stage: test-node-8
-      node: 8
-      script: npm test && ./smoke-test/run.sh
-    - stage: test-node-10
-      node: 10
-      script: npm test && ./smoke-test/run.sh
 
-
+script:
+  - npm test && ./smoke_test/run.sh

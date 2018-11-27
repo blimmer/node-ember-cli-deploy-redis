@@ -17,5 +17,9 @@ jobs:
       node: 10
       script: eslint .
 
+stages:
+  - lint # fast fail if linting does not pass
+  - test
+
 script:
   - npm test && ./smoke_test/run.sh

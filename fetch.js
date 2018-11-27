@@ -1,18 +1,18 @@
-var Bluebird  = require('bluebird');
-var _defaultsDeep = require('lodash/defaultsDeep');
+const Bluebird  = require('bluebird');
+const _defaultsDeep = require('lodash/defaultsDeep');
 
-var EmberCliDeployError = require('./errors/ember-cli-deploy-error');
+const EmberCliDeployError = require('./errors/ember-cli-deploy-error');
 
-var ioRedis = require('ioredis');
-var memoize = require('memoizee');
-var redisClient;
-var defaultConnectionInfo = {
+const ioRedis = require('ioredis');
+const memoize = require('memoizee');
+let redisClient;
+
+const defaultConnectionInfo = {
   host: "127.0.0.1",
   port: 6379
 };
 
-var opts;
-var _defaultOpts = {
+const _defaultOpts = {
   revisionQueryParam: 'index_key',
   memoize: false,
   memoizeOpts: {
@@ -21,20 +21,22 @@ var _defaultOpts = {
     max:      4,    // a sane default (current pointer, current html and two indexkeys in cache)
   }
 };
-var _getOpts = function (opts) {
+
+let opts;
+function _getOpts(opts) {
   opts = opts || {};
   return _defaultsDeep({}, opts, _defaultOpts);
-};
+}
 
-var initialized = false;
-var _initialize = function (connectionInfo, passedOpts) {
+let initialized = false;
+function _initialize(connectionInfo, passedOpts) {
   opts = _getOpts(passedOpts);
-  var config = connectionInfo ? connectionInfo : defaultConnectionInfo;
+  let config = connectionInfo ? connectionInfo : defaultConnectionInfo;
 
   redisClient = new ioRedis(config);
 
   if (opts.memoize === true) {
-    var memoizeOpts = opts.memoizeOpts;
+    let memoizeOpts = opts.memoizeOpts;
     memoizeOpts.async = false; // this should never be overwritten by the consumer
     memoizeOpts.length = 1;
 
@@ -42,20 +44,20 @@ var _initialize = function (connectionInfo, passedOpts) {
   }
 
   initialized = true;
-};
+}
 
-var fetchIndex = function (req, keyPrefix, connectionInfo, passedOpts) {
+function fetchIndex(req, keyPrefix, connectionInfo, passedOpts) {
   if (!initialized) {
     _initialize(connectionInfo, passedOpts);
   }
 
-  var indexkey;
+  let indexkey;
   if (req.query[opts.revisionQueryParam]) {
-    var queryKey = req.query[opts.revisionQueryParam].replace(/[^A-Za-z0-9]/g, '');
-    indexkey = keyPrefix + ':' + queryKey;
+    let queryKey = req.query[opts.revisionQueryParam].replace(/[^A-Za-z0-9]/g, '');
+    indexkey = `${keyPrefix}:${queryKey}`;
   }
 
-  var customIndexKeyWasSpecified = !!indexkey;
+  let customIndexKeyWasSpecified = !!indexkey;
   function retrieveIndexKey(){
     if (indexkey) {
       return Bluebird.resolve(indexkey);
@@ -81,6 +83,6 @@ var fetchIndex = function (req, keyPrefix, connectionInfo, passedOpts) {
       throw new EmberCliDeployError("There's no " + indexkey + " revision. The site is down.", !customIndexKeyWasSpecified);
     }
   });
-};
+}
 
 module.exports = fetchIndex;

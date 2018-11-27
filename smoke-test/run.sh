@@ -9,6 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 REDIS_DOCKER_IMAGE='redis:5-alpine'
 DOCKER_CONTAINER_NAME='node-ember-cli-deploy-redis-smoke-test'
+EXPRESS_APP_PID=''
 
 _start-redis() {
   echo "Starting redis container..."
@@ -23,6 +24,15 @@ _seed-redis() {
   docker exec $DOCKER_CONTAINER_NAME cat -- seed_data.txt | redis-cli --pipe
 }
 
+_start-express-app() {
+  echo "Starting express app..."
+  pushd "$SCRIPT_DIR/express"
+  npm install --no-package-lock
+  npm start &
+  EXPRESS_APP_PID=$!
+  popd
+}
+
 _test() {
   echo "TODO"
 }
@@ -33,11 +43,18 @@ _stop-redis() {
   docker rm $DOCKER_CONTAINER_NAME > /dev/null
 }
 
+_stop-express-app() {
+  echo "Killing express app..."
+  kill $EXPRESS_APP_PID
+}
+
 main() {
   _start-redis
   _seed-redis
+  _start-express-app
   _test
   _stop-redis
+  _stop-express-app
 }
 
 main

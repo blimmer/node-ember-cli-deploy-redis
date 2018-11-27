@@ -44,21 +44,25 @@ _start-express-app() {
 # https://github.com/sstephenson/bats
 _test() {
   # To see the state of the redis instance, see smoke-test/seed_data.txt
+  echo "Testing current revision..."
   local index_output
   index_output=$(curl -s localhost:3000)
 
   if [ "$index_output" != "<html><body>this is abc123</body></html>" ]; then
-    echo "ERROR: index did not serve the expected HTML string"
+    echo "FAILURE: index did not serve the expected HTML string"
     exit 1
   fi
+  echo "SUCCESS: Testing current revision"
 
+  echo "Testing revision key..."
   local revision_output
   revision_output=$(curl -s localhost:3000/?index_key=def456)
 
   if [ "$revision_output" != "<html><body>this is def456</body></html>" ]; then
-    echo "ERROR: specified revision did not serve the expected HTML string"
+    echo "FAILURE: specified revision did not serve the expected HTML string"
     exit 1
   fi
+  echo "SUCCESS: Testing revision key"
 
   echo "SUCCESS! All tests passed!"
 }

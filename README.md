@@ -79,30 +79,30 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 
 ## Documentation
 ### `nodeEmberCliDeployRedis(keyPrefix, connectionInfo, options)` (middleware constructor)
-* keyPrefix (required) - the application name, specified for ember deploy  
+* keyPrefix (required) - the application name, specified for ember deploy
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
-* connectionInfo (required) - the configuration to connect to redis.  
+* connectionInfo (required) - the configuration to connect to redis.
    internally, this library uses [ioredis](https://github.com/luin/ioredis), so pass a configuration supported by ioredis. please see their README for more information.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, keyPrefix, connectionInfo, options)`
 Arguments
-* request (required) - the request object  
+* request (required) - the request object
    the request object is used to check for the presence of `revisionQueryParam`
-* keyPrefix (required) - the application name, specified for ember deploy  
+* keyPrefix (required) - the application name, specified for ember deploy
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
-* connectionInfo (required) - the configuration to connect to redis.  
+* connectionInfo (required) - the configuration to connect to redis.
    internally, this library uses [ioredis](https://github.com/luin/ioredis), so pass a configuration supported by ioredis.
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 Returns
-* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)  
-   when resolved, it returns the requested `index.html` string  
+* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)
+   when resolved, it returns the requested `index.html` string
    when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
 
 
 ### options
-* `revisionQueryParam` (defaults to `index_key`)  
+* `revisionQueryParam` (defaults to `index_key`)
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `keyPrefix` for security.
 * `memoize` (defaults to `false`)
    enable memoizing Redis `get`s. see [the memoization section](#Memoization) for more details.
@@ -175,14 +175,21 @@ describe('my module', function() {
 });
 ```
 
-
 ## Notes
 * Don't create any other redis keys you don't want exposed to the public under your `keyPrefix`.
 
 ## Contributing
+
 Comments/PRs/Issues are welcome!
 
-### Running Project Tests
-```
+### Running Project Unit Tests
+
+```console
 npm test
+```
+
+### Running Project Smoke Tests
+
+```console
+npm run smoke-test
 ```

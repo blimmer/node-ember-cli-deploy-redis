@@ -30,11 +30,37 @@ _start-express-app() {
   npm install --no-package-lock
   npm start &
   EXPRESS_APP_PID=$!
+
+  echo "Waiting for express app to start up..."
+  while ! nc -z localhost 3000; do
+    sleep 0.1
+  done
+  echo "Express app is started!"
+
   popd
 }
 
+# If this gets more complex, we might want to use BATS
+# https://github.com/sstephenson/bats
 _test() {
-  echo "TODO"
+  # To see the state of the redis instance, see smoke-test/seed_data.txt
+  local index_output
+  index_output=$(curl -s localhost:3000)
+
+  if [ "$index_output" != "<html><body>this is abc123</body></html>" ]; then
+    echo "ERROR: index did not serve the expected HTML string"
+    exit 1
+  fi
+
+  local revision_output
+  revision_output=$(curl -s localhost:3000/?index_key=def456)
+
+  if [ "$revision_output" != "<html><body>this is def456</body></html>" ]; then
+    echo "ERROR: specified revision did not serve the expected HTML string"
+    exit 1
+  fi
+
+  echo "SUCCESS! All tests passed!"
 }
 
 _stop-redis() {

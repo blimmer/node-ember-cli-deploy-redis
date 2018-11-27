@@ -14,7 +14,7 @@ cache:
 jobs:
   include:
     - stage: lint
-      node: 10
+      node_js: 10
       script: eslint .
 
 stages:

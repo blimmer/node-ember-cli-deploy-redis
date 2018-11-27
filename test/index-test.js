@@ -14,7 +14,7 @@ var htmlString = '<html><body>1</body></html>';
 describe('express middleware', function() {
   var sandbox, req, res, fetchIndexStub;
   before(function() {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   beforeEach(function() {

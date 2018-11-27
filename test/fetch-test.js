@@ -19,7 +19,7 @@ var ioRedisApi = testApi.ioRedisApi;
 describe('fetch', function() {
   var sandbox;
   before(function() {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     fetchIndex.__set__('ioRedis', ioRedisApi);
   });
 

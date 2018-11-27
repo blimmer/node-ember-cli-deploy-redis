@@ -3,6 +3,7 @@
 ExpressJS middleware to fetch the current (or specified) revision of your Ember App deployed by [ember-cli-deploy](https://github.com/ember-cli/ember-cli-deploy).
 
 ## Why?
+
 [ember-cli-deploy](https://github.com/ember-cli/ember-cli-deploy) is great. It allows you to run
 multiple versions in production at the same time and view revisions without impacting users.
 However, [the example provided](https://github.com/philipheinser/ember-lightning) uses [koa](http://koajs.com/)
@@ -10,6 +11,7 @@ and many of us are not. This package allows you to easily fetch current and spec
 revisions from [redis](http://redis.io) with [Express](expressjs.com) and other Node servers.
 
 ## Installation
+
 It's important to choose the right version of this library to match the version of
 ember-cli-deploy you're using.
 
@@ -25,41 +27,46 @@ See [the changelog](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/
 for an upgrade guide.
 
 ## Usage
+
 There are two main ways of using this library. For most simple Express servers, you'll
 want to simply use the middleware. However, if you need more flexibility, you'll
 want to use the internal `fetch` methods, with custom logic.
 
 ### ExpressJS Middleware
+
 1. `require` the package
 2. `use` the package in your app
 
 #### Example
-```javascript
-var express = require('express');
-var app = express();
 
-var nodeEmberCliDeployRedis = require('node-ember-cli-deploy-redis');
+```javascript
+const express = require('express');
+const app = express();
+
+const nodeEmberCliDeployRedis = require('node-ember-cli-deploy-redis');
 app.use('/*', nodeEmberCliDeployRedis('myapp:index', {
-  host: 'redis.example.org',
-  port: 6929,
-  password: 'passw0rd!',
-  db: 0
+  host: 'redis.example.org',    // default is localhost
+  port: 6929,                   // default is 6379
+  password: 'passw0rd!',        // default is undefined
+  db: 0                         // default is undefined
 }));
 ```
 
 <hr>
 
 ### Custom Fetch Method
+
 1. `require` the package
 2. Use the `fetchIndex` method
 3. Render the index string as you wish.
 
 #### Example
-```javascript
-var express = require('express');
-var app = express();
 
-var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
+```javascript
+const express = require('express');
+const app = express();
+
+const fetchIndex = require('node-ember-cli-deploy-redis/fetch');
 
 app.get('/', function(req, res) {
     fetchIndex(req, 'myapp:index', {
@@ -78,7 +85,9 @@ app.get('/', function(req, res) {
 Check out [location-aware-ember-server](https://github.com/blimmer/location-aware-ember-server) for a running example.
 
 ## Documentation
+
 ### `nodeEmberCliDeployRedis(keyPrefix, connectionInfo, options)` (middleware constructor)
+
 * keyPrefix (required) - the application name, specified for ember deploy
    the keys in redis are prefaced with this name. For instance, if your redis keys are `my-app:index:current`, you'd pass `my-app:index`.
 * connectionInfo (required) - the configuration to connect to redis.
@@ -86,7 +95,9 @@ Check out [location-aware-ember-server](https://github.com/blimmer/location-awar
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 ### `fetchIndex(request, keyPrefix, connectionInfo, options)`
+
 Arguments
+
 * request (required) - the request object
    the request object is used to check for the presence of `revisionQueryParam`
 * keyPrefix (required) - the application name, specified for ember deploy
@@ -96,12 +107,13 @@ Arguments
 * options (optional) - a hash of params to override [the defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/README.md#options)
 
 Returns
+
 * a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)
    when resolved, it returns the requested `index.html` string
    when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
 
-
 ### options
+
 * `revisionQueryParam` (defaults to `index_key`)
    the query parameter to specify a revision (e.g. `http://example.org/?index_key=abc123`). the key will be automatically prefaced with your `keyPrefix` for security.
 * `memoize` (defaults to `false`)
@@ -110,6 +122,7 @@ Returns
    customize memoization parameters. see [the memoization section](#Memoization) for more details.
 
 ## Memoization
+
 Since the majority of the requests will be serving the `current` version of your
 app, you can enable memoization to reduce the load on Redis. By default, memoization
 is disabled. To enable it, simply pass:
@@ -124,6 +137,7 @@ and the [defaults](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/m
 for this library.
 
 ### Example
+
 ```javascript
 app.use('/*', nodeEmberCliDeployRedis(
   'myapp:index',
@@ -133,6 +147,7 @@ app.use('/*', nodeEmberCliDeployRedis(
 ```
 
 ## Testing
+
 In order to facilitate unit testing and/or integration testing this
 library exports a mockable redis api.  You will need to use a
 dependency injection framework such as
@@ -142,8 +157,8 @@ dependency injection framework such as
 
 ```javascript
 // my-module.js
-var fetchIndex = require('node-ember-cli-deploy-redis/fetch');
-var indexWrapper = function(req, res) {
+const fetchIndex = require('node-ember-cli-deploy-redis/fetch');
+const indexWrapper = function(req, res) {
   return fetchIndex(req, 'app', {
     // real redis config
   }).then(function (indexHtml)) {
@@ -153,10 +168,10 @@ var indexWrapper = function(req, res) {
 module.exports = indexWrapper;
 
 // my-module-test.js
-var redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
-var fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
-var redis = redisTestApi.ioRedisApi;
-var myModule = rewire('my-module');
+const redisTestApi = require('node-ember-cli-deploy-redis/test/helpers/test-api');
+const fetchIndex = rewire('node-ember-cli-deploy-redis/fetch');
+const redis = redisTestApi.ioRedisApi;
+const myModule = rewire('my-module');
 
 describe('my module', function() {
   afterEach(function() {
@@ -176,6 +191,7 @@ describe('my module', function() {
 ```
 
 ## Notes
+
 * Don't create any other redis keys you don't want exposed to the public under your `keyPrefix`.
 
 ## Contributing

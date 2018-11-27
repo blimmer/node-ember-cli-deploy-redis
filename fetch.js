@@ -31,19 +31,6 @@ var _initialize = function (connectionInfo, passedOpts) {
   opts = _getOpts(passedOpts);
   var config = connectionInfo ? connectionInfo : defaultConnectionInfo;
 
-  // ioRedis uses the `db` param rather than `database`.
-  // This block keeps the existing API compatible.
-  if (config.database) {
-    console.warn(
-      "[DEPRECATION] " +
-      "You passed a key called 'database' to node-ember-cli-deploy-redis. " +
-      "Please replace with 'db'. This fallback will be removed in the future."
-    );
-
-    config.db = config.database;
-    delete config.database;
-  }
-
   redisClient = new ioRedis(config);
 
   if (opts.memoize === true) {

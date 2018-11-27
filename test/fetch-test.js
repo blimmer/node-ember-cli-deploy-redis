@@ -66,45 +66,6 @@ describe('fetch', function() {
         expect(callArg).to.be.a('string');
         expect(callArg).to.equal(configString);
       });
-
-      // TODO: remove this after people have a chance to fix their apps
-      // change was introduced in 0.4.x
-      describe('database vs. db param', function() {
-        var consoleStub;
-        beforeEach(function() {
-          consoleStub = sandbox.stub(console, 'warn');
-        });
-
-        it('translates database to db', function() {
-          var configObj = {
-            database: 1
-          };
-
-          _initialize(configObj);
-
-          expect(ioRedisInitStub.calledOnce).to.be.true;
-          expect(ioRedisInitStub.calledWithNew()).to.be.true;
-          expect(ioRedisInitStub.firstCall.args.length).to.equal(1);
-
-          var callArg = ioRedisInitStub.firstCall.args[0];
-
-          expect(callArg).to.be.an('object');
-          expect(callArg).to.not.have.key('database');
-          expect(callArg.db).to.equal(1);
-        });
-
-        it('warns the developer of this deprecation', function() {
-          var configObj = {
-            database: 1
-          };
-
-          _initialize(configObj);
-
-          var warning = consoleStub.firstCall.args[0];
-          expect(warning).to.include('DEPRECATION');
-          expect(warning).to.include("replace with 'db'");
-        });
-      });
     });
 
     describe('memoization', function() {

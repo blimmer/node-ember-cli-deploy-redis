@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 module.exports = function EmberCliDeployError(message, critical) {
   Error.captureStackTrace(this, this.constructor);

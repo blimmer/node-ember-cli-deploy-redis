@@ -12,6 +12,9 @@
     "express",
     "redis"
   ],
+  "engines": {
+    "node": "^6 || ^8 || >=10"
+  },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*-test.js"
   },
@@ -22,11 +25,14 @@
   },
   "homepage": "https://github.com/blimmer/node-ember-cli-deploy-redis",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^2.4.5",
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "mocha": "^5.2.0",
     "node-mocks-http": "^1.5.2",
-    "rewire": "^2.5.1",
-    "sinon": "^1.17.3"
+    "rewire": "^4.0.1",
+    "sinon": "^7.1.1",
+    "sinon-chai": "^3.3.0"
   },
   "dependencies": {
     "bluebird": "^3.3.4",

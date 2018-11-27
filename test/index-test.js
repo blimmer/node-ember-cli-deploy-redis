@@ -1,4 +1,6 @@
 var expect    = require('chai').expect;
+var { describe, before, beforeEach, afterEach, it } = require('mocha');
+
 var sinon     = require('sinon');
 var httpMocks = require('node-mocks-http');
 var Bluebird  = require('bluebird');
@@ -12,7 +14,7 @@ var htmlString = '<html><body>1</body></html>';
 describe('express middleware', function() {
   var sandbox, req, res, fetchIndexStub;
   before(function() {
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
   });
 
   beforeEach(function() {

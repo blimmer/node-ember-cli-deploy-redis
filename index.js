@@ -1,7 +1,7 @@
 'use strict';
 
-var Bluebird = require('bluebird');
-var fetchIndex = require('./fetch');
+const Bluebird = require('bluebird');
+const fetchIndex = require('./fetch');
 
 module.exports = function (keyPrefix, connectionInfo, opts) {
   return function(req, res) {

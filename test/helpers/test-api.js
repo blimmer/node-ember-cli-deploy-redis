@@ -1,25 +1,23 @@
-var Bluebird = require('bluebird');
-
-var ioRedisClientApi = {
+const ioRedisClientApi = {
   _storage: {},
   get: function(key){
-    return Bluebird.resolve(this._storage[key]);
+    return Promise.resolve(this._storage[key]);
   },
   set: function(key, value){
     this._storage[key] = value;
-    return Bluebird.resolve(value);
+    return Promise.resolve(value);
   },
   del: function(key){
     delete this._storage[key];
-    return Bluebird.resolve();
+    return Promise.resolve();
   },
   flushall: function(){
     this._storage = {};
-    return Bluebird.resolve();
+    return Promise.resolve();
   }
 };
 
-var ioRedisApi = function() {
+const ioRedisApi = function() {
   return ioRedisClientApi;
 };
 

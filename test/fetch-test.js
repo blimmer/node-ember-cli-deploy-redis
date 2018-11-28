@@ -6,7 +6,6 @@ const context = describe;
 
 const sinon =  require('sinon');
 const rewire = require('rewire');
-const Bluebird = require('bluebird');
 
 const fetchIndex = rewire('../fetch');
 
@@ -303,7 +302,7 @@ describe('fetch', function() {
 
     it('resolves the promise with the index html requested', function(done) {
       const currentHtmlString = '<html><body>1</body></html>';
-      Bluebird.all([
+      Promise.all([
         redis.set('myapp:index:current', 'abc123'),
         redis.set('myapp:index:abc123', currentHtmlString),
       ]).then(function(){
@@ -326,7 +325,7 @@ describe('fetch', function() {
           index_key: 'def456'
         }
       };
-      Bluebird.all([
+      Promise.all([
         redis.set('myapp:index:current', 'abc123'),
         redis.set('myapp:index:abc123', currentHtmlString),
         redis.set('myapp:index:def456', newDeployHtmlString)
@@ -344,7 +343,7 @@ describe('fetch', function() {
 
     it('memoizes results from redis when turned on', function(done) {
       const currentHtmlString = '<html><body>1</body></html>';
-      Bluebird.all([
+      Promise.all([
         redis.set('myapp:index:current', 'abc123'),
         redis.set('myapp:index:abc123', currentHtmlString),
         fetchIndex(basicReq, 'myapp:index', null, { memoize: true }),

@@ -3,7 +3,6 @@ var { describe, before, beforeEach, afterEach, it } = require('mocha');
 
 var sinon     = require('sinon');
 var httpMocks = require('node-mocks-http');
-var Bluebird  = require('bluebird');
 var rewire    = require('rewire');
 
 var middleware = rewire('../index');
@@ -31,7 +30,7 @@ describe('express middleware', function() {
 
   describe('success', function() {
     it('returns a 200 and sends the html', function(done) {
-      fetchIndexStub.returns(Bluebird.resolve(htmlString));
+      fetchIndexStub.returns(Promise.resolve(htmlString));
 
       middleware()(req, res).then(function() {
         expect(res.statusCode).to.equal(200);
@@ -45,7 +44,7 @@ describe('express middleware', function() {
   describe('failure', function() {
     it('calls the `next` function with the error', function(done) {
       var error = new EmberCliDeployError();
-      fetchIndexStub.returns(Bluebird.reject(error));
+      fetchIndexStub.returns(Promise.reject(error));
 
       function nextExpectation() {
         expect(arguments).to.have.length(1);

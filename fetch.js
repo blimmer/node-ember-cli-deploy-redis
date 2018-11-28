@@ -1,4 +1,3 @@
-const Bluebird  = require('bluebird');
 const _defaultsDeep = require('lodash/defaultsDeep');
 
 const EmberCliDeployError = require('./errors/ember-cli-deploy-error');
@@ -60,7 +59,7 @@ function fetchIndex(req, keyPrefix, connectionInfo, passedOpts) {
   let customIndexKeyWasSpecified = !!indexkey;
   function retrieveIndexKey(){
     if (indexkey) {
-      return Bluebird.resolve(indexkey);
+      return Promise.resolve(indexkey);
     } else {
       return redisClient.get(keyPrefix + ":current").then(function(result){
         if (!result) { throw new Error(); }

@@ -16,14 +16,6 @@ _start-redis() {
   docker run -p 6379:6379 --name $DOCKER_CONTAINER_NAME -d $REDIS_DOCKER_IMAGE
 }
 
-_seed-redis() {
-  echo "Seeding redis..."
-
-  # See https://redis.io/topics/mass-insert for more information
-  docker cp "$SCRIPT_DIR/seed_data.txt" $DOCKER_CONTAINER_NAME:/data
-  docker exec $DOCKER_CONTAINER_NAME cat -- seed_data.txt | redis-cli --pipe
-}
-
 _start-express-app() {
   echo "Starting express app..."
   pushd "$SCRIPT_DIR/express"
@@ -43,28 +35,8 @@ _start-express-app() {
 # If this gets more complex, we might want to use BATS
 # https://github.com/sstephenson/bats
 _test() {
-  # To see the state of the redis instance, see smoke-test/seed_data.txt
-  echo "Testing current revision..."
-  local index_output
-  index_output=$(curl -s localhost:3000)
-
-  if [ "$index_output" != "<html><body>this is abc123</body></html>" ]; then
-    echo "FAILURE: index did not serve the expected HTML string"
-    exit 1
-  fi
-  echo "SUCCESS: Testing current revision"
-
-  echo "Testing revision key..."
-  local revision_output
-  revision_output=$(curl -s localhost:3000/?index_key=def456)
-
-  if [ "$revision_output" != "<html><body>this is def456</body></html>" ]; then
-    echo "FAILURE: specified revision did not serve the expected HTML string"
-    exit 1
-  fi
-  echo "SUCCESS: Testing revision key"
-
-  echo "SUCCESS! All tests passed!"
+  echo "Running tests..."
+  DOCKER_CONTAINER_NAME=$DOCKER_CONTAINER_NAME "$SCRIPT_DIR"/test-helper/bats/bin/bats "$SCRIPT_DIR"/test.bats
 }
 
 _stop-redis() {
@@ -74,17 +46,22 @@ _stop-redis() {
 }
 
 _stop-express-app() {
-  echo "Killing express app..."
-  kill $EXPRESS_APP_PID
+  if [ $EXPRESS_APP_PID != "" ]; then
+   echo "Killing express app..."
+   kill $EXPRESS_APP_PID
+  fi
 }
 
-main() {
-  _start-redis
-  _seed-redis
-  _start-express-app
-  _test
+_cleanup() {
   _stop-redis
   _stop-express-app
 }
 
+main() {
+  _start-redis
+  _start-express-app
+  _test
+}
+
+trap _cleanup EXIT
 main

@@ -20,7 +20,7 @@ _start-express-app() {
   echo "Starting express app..."
   pushd "$SCRIPT_DIR/express"
   npm install --no-package-lock
-  npm start &
+  NODE_ENV=production npm start &
   EXPRESS_APP_PID=$!
 
   echo "Waiting for express app to start up..."

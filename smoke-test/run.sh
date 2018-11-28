@@ -53,8 +53,8 @@ _stop-express-app() {
 }
 
 _cleanup() {
-  _stop-redis
   _stop-express-app
+  _stop-redis
 }
 
 main() {

@@ -1,0 +1,4 @@
+FLUSHALL
+SET myapp:index:abc123 "<html><body>this is abc123</body></html>"
+SET myapp:index:def456 "<html><body>this is def456</body></html>"
+SET myapp:index:current "abc123"

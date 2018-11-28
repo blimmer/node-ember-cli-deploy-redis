@@ -31,3 +31,7 @@ node_modules
 
 # Optional REPL history
 .node_repl_history
+
+# Smoke Testing
+smoke-test/express/node_modules
+smoke-test/express/package-lock.json

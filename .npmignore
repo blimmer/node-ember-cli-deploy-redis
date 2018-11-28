@@ -1,0 +1,4 @@
+/test
+/smoke-test
+.eslintrc.js
+.travis.yml

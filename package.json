@@ -16,7 +16,8 @@
     "node": "^6 || ^8 || >=10"
   },
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*-test.js"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha ./test/**/*-test.js",
+    "smoke-test": "./smoke-test/run.sh"
   },
   "author": "Ben Limmer <ben@benlimmer.com> (http://benlimmer.com/)",
   "license": "ISC",

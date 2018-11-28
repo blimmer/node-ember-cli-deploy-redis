@@ -198,6 +198,14 @@ describe('my module', function() {
 
 Comments/PRs/Issues are welcome!
 
+### Cloning
+
+This project utilizes git submodules. Please use the following command to clone:
+
+```console
+git clone --recurse-submodules https://github.com/blimmer/node-ember-cli-deploy-redis.git
+```
+
 ### Running Project Unit Tests
 
 ```console

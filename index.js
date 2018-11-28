@@ -11,7 +11,6 @@ module.exports = function (keyPrefix, connectionInfo, opts) {
         resolve();
       }).catch(function(err) {
         next(err);
-        reject();
       });
     });
   };

@@ -44,15 +44,17 @@ describe('express middleware', function() {
 
   describe('failure', function() {
     it('calls the `next` function with the error', function(done) {
-      var nextStub = sandbox.stub();
       var error = new EmberCliDeployError();
       fetchIndexStub.returns(Bluebird.reject(error));
 
-      middleware()(req, res, nextStub).then(function() {
-        done('Promise should not have resolved');
-      }).catch(function() {
-        expect(nextStub).to.have.been.calledOnceWith(error)
+      function nextExpectation() {
+        expect(arguments).to.have.length(1);
+        expect(arguments[0]).to.equal(error);
         done();
+      }
+
+      middleware()(req, res, nextExpectation).then(function() {
+        done('Promise should not have resolved');
       });
     });
   });

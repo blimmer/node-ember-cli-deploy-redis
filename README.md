@@ -108,7 +108,7 @@ Arguments
 
 Returns
 
-* a [Promise](https://github.com/petkaantonov/bluebird/blob/master/API.md#core)
+* a `Promise`
    when resolved, it returns the requested `index.html` string
    when failed, it returns an [EmberCliDeployError](https://github.com/blimmer/node-ember-cli-deploy-redis/blob/develop/errors/ember-cli-deploy-error.js).
 

@@ -43,16 +43,15 @@ describe('express middleware', function() {
   });
 
   describe('failure', function() {
-    it('returns a 500 and the error', function(done) {
+    it('calls the `next` function with the error', function(done) {
+      var nextStub = sandbox.stub();
       var error = new EmberCliDeployError();
       fetchIndexStub.returns(Bluebird.reject(error));
 
-      middleware()(req, res).then(function() {
+      middleware()(req, res, nextStub).then(function() {
         done('Promise should not have resolved');
       }).catch(function() {
-        expect(res.statusCode).to.equal(500);
-        var data = res._getData();
-        expect(data).to.equal(error);
+        expect(nextStub).to.have.been.calledOnceWith(error)
         done();
       });
     });
